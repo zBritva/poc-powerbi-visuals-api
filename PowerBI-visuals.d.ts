@@ -1341,7 +1341,8 @@ declare module powerbi {
 }
 
 /**
- * Change Log Version 1.8.0
+ * Change Log Version 1.9.0
+ * Added launchUrl
  */
 
 declare module powerbi.extensibility.visual {
@@ -1370,6 +1371,7 @@ declare module powerbi.extensibility.visual {
         telemetry: ITelemetryService;
         locale: string;
         allowInteractions: boolean;
+        launchUrl: (url: string) => void;
         instanceId: string;
         refreshHostData: () => void;
     }
