@@ -1097,11 +1097,55 @@ declare module powerbi.extensibility {
 }
 
 
+
+
+declare module powerbi {
+    export interface IColorInfo extends IStyleInfo {
+        value: string;
+    }
+
+    export interface IStyleInfo {
+        className?: string;
+    }
+}
+
+
+
+declare module powerbi.extensibility {
+    interface ISelectionManager {
+        select(selectionId: ISelectionId | ISelectionId[], multiSelect?: boolean): IPromise<ISelectionId[]>;
+        hasSelection(): boolean;
+        clear(): IPromise<{}>;
+        getSelectionIds(): ISelectionId[];
+    }
+}
+
+
+
+declare module powerbi.extensibility {
+    export interface ISelectionId { }
+
+    export interface ISelectionIdBuilder {
+        withCategory(categoryColumn: DataViewCategoryColumn, index: number): this;
+        withSeries(seriesColumn: DataViewValueColumns, valueColumn: DataViewValueColumn | DataViewValueColumnGroup): this;
+        withMeasure(measureId: string): this;
+        createSelectionId(): ISelectionId;
+    }
+
+    function VisualPlugin (options: IVisualPluginOptions): ClassDecorator;
+}
+
+
+
+
+declare module powerbi.extensibility {
+    export interface IColorPalette {
+        getColor(key: string): IColorInfo;
+    }
+}
+
 /**
- * Change Log Version 1.0.0
- * - Add type to update options (data, resize, viewmode)
- * - Remove deprecated methods (onDataChange, onResizing, onViewModeChange) 
- * - Add hostAdapter for host services versioning
+ * Change Log Version 1.2.0
  */
 
 
@@ -1113,7 +1157,7 @@ declare module powerbi.extensibility.visual {
      */
     export interface IVisual extends extensibility.IVisual {
         /** Notifies the IVisual of an update (data, viewmode, size change). */
-        update(options: VisualUpdateOptions): void;
+        update<T>(options: VisualUpdateOptions, viewModel?: T): void;
 
         /** Notifies the visual that it is being destroyed, and to do any cleanup necessary (such as unsubscribing event handlers). */
         destroy?(): void;
@@ -1122,7 +1166,12 @@ declare module powerbi.extensibility.visual {
         enumerateObjectInstances?(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration;
     }
 
-    export interface IVisualHost extends extensibility.IVisualHost { }
+    export interface IVisualHost extends extensibility.IVisualHost {
+        createSelectionIdBuilder: () => visuals.ISelectionIdBuilder;
+        createSelectionManager: () => ISelectionManager;
+        colorPalette: IColorPalette;
+        persistProperties: (changes: VisualObjectInstancesToPersist) => void;
+    }
 
     export interface VisualUpdateOptions extends extensibility.VisualUpdateOptions {
         viewport: IViewport;
@@ -1135,7 +1184,5 @@ declare module powerbi.extensibility.visual {
         element: HTMLElement;
         host: IVisualHost;
     }
-
 }
 
-export = powerbi;
