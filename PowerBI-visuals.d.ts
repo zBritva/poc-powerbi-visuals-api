@@ -1,29 +1,4 @@
-/*
- *  Power BI Visual CLI
- *
- *  Copyright (c) Microsoft Corporation
- *  All rights reserved.
- *  MIT License
- *
- *  Permission is hereby granted, free of charge, to any person obtaining a copy
- *  of this software and associated documentation files (the ""Software""), to deal
- *  in the Software without restriction, including without limitation the rights
- *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  copies of the Software, and to permit persons to whom the Software is
- *  furnished to do so, subject to the following conditions:
- *
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *  THE SOFTWARE.
- */
-declare module powerbi {
+declare namespace powerbi {
     enum VisualDataRoleKind {
         /** Indicates that the role should be bound to something that evaluates to a grouping of values. */
         Grouping = 0,
@@ -82,8 +57,6 @@ declare module powerbi {
 }
 ﻿
 
-
-
 declare module powerbi.visuals.plugins {
     /** This IVisualPlugin interface is only used by the CLI tools when compiling */
     export interface IVisualPlugin {
@@ -107,8 +80,6 @@ declare module powerbi.visuals.plugins {
 
     }
 }
-﻿
-
 
 
 declare module jsCommon {
@@ -116,9 +87,7 @@ declare module jsCommon {
         get(id: string): string;
         getOptional(id: string): string;
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     /** 
@@ -263,8 +232,6 @@ declare module powerbi {
     }
 }
 
-
-
 declare module powerbi.visuals {
     import Selector = data.Selector;
 
@@ -283,25 +250,19 @@ declare module powerbi.visuals {
         getSelectorsByColumn(): Selector;
         hasIdentity(): boolean;
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     export const enum SortDirection {
         Ascending = 1,
         Descending = 2,
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     export interface QueryTransformTypeDescriptor {
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     /** Represents views of a data set. */
@@ -542,7 +503,12 @@ declare module powerbi {
 
         children?: DataViewMatrixNode[];
 
-         
+         /* If this DataViewMatrixNode represents the  inner-most dimension of row groups (i.e. a leaf node), then this property will contain the values at the 
+         * matrix intersection under the group. The valueSourceIndex property will contain the position of the column in the select statement to which the 
+         * value belongs.
+         *
+         * When this DataViewMatrixNode is used under the context of DataView.matrix.columns, this property is not used.
+         */
         values?: { [id: number]: DataViewMatrixNodeValue };         
 
         /**
@@ -635,9 +601,7 @@ declare module powerbi {
 
     /** Defines the PrimitiveValue range. */
     export type PrimitiveValueRange = ValueRange<PrimitiveValue>;
-}﻿
-
-
+}
 
 declare module powerbi {
     /** Represents evaluated, named, custom objects in a DataView. */
@@ -667,9 +631,7 @@ declare module powerbi {
     export type DataViewObjectMap = { [id: string]: DataViewObject };
 
     export type DataViewPropertyValue = PrimitiveValue | StructuralObjectValue;
-}﻿
-
-
+}
 
 declare module powerbi.data {
     /** Defines a match against all instances of given roles. */
@@ -677,9 +639,7 @@ declare module powerbi.data {
         roles: string[];
         key: string;
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     /** Encapsulates the identity of a data scope in a DataView. */
@@ -690,9 +650,7 @@ declare module powerbi {
         /** Key string that identifies the DataViewScopeIdentity to a string, which can be used for equality comparison. */
         key: string;
     }
-}﻿
-
-
+}
 
 declare module powerbi.data {
     /** Defines a match against all instances of a given DataView scope. */
@@ -700,17 +658,13 @@ declare module powerbi.data {
         exprs: ISQExpr[];
         key: string;
     }
-}﻿
-
-
+}
 
 declare module powerbi.data {
     import IStringResourceProvider = jsCommon.IStringResourceProvider;
 
     export type DisplayNameGetter = ((resourceProvider: IStringResourceProvider) => string) | string;
-}﻿
-
-
+}
 
 declare module powerbi.data {
     /** Defines a selector for content, including data-, metadata, and user-defined repetition. */
@@ -726,9 +680,7 @@ declare module powerbi.data {
     }
 
     export type DataRepetitionSelector = DataViewScopeIdentity | DataViewScopeWildcard | DataViewRoleWildcard; 
-}﻿
-
-
+}
 
 declare module powerbi.data {
     //intentionally blank interfaces since this is not part of the public API
@@ -739,9 +691,7 @@ declare module powerbi.data {
 
     export interface ISQConstantExpr extends ISQExpr { }
 
-}﻿
-
-
+}
 
 declare module powerbi {
     export interface DefaultValueDefinition {
@@ -753,8 +703,6 @@ declare module powerbi {
         defaultValue: boolean;
     }
 }
-
-
 
 declare module powerbi {
     import DisplayNameGetter = powerbi.data.DisplayNameGetter;
@@ -772,9 +720,7 @@ declare module powerbi {
         members(validMembers?: EnumMemberValue[]): IEnumMember[];
     }
     
-}﻿
-
-
+}
 
 declare module powerbi {
     export interface Fill {
@@ -811,49 +757,54 @@ declare module powerbi {
         /** Indicates whether the color value may be nullable, and a 'no fill' option is appropriate. */
         nullable: boolean;
     }  
-}﻿
-
-
+}
 
 declare module powerbi {
-    export interface FillRule extends FillRuleGeneric<string, number> {
+    export interface FillRule extends FillRuleGeneric<string, number, string> {
     }
 
     export interface FillRuleTypeDescriptor {
     }
 
-    export interface FillRuleGeneric<TColor, TValue> {
-        linearGradient2?: LinearGradient2Generic<TColor, TValue>;
-        linearGradient3?: LinearGradient3Generic<TColor, TValue>;
+    export interface FillRuleGeneric<TColor, TValue, TStrategy> {
+        linearGradient2?: LinearGradient2Generic<TColor, TValue, TStrategy>;
+        linearGradient3?: LinearGradient3Generic<TColor, TValue, TStrategy>;
 
         // stepped2?
         // ...
     }
 
-    export interface LinearGradient2Generic<TColor, TValue> {
+    export interface LinearGradient2Generic<TColor, TValue, TStrategy> {
         max: RuleColorStopGeneric<TColor, TValue>;
         min: RuleColorStopGeneric<TColor, TValue>;
+        nullColoringStrategy?: NullColoringStrategyGeneric<TStrategy, TColor>;
     }
-
-    export interface LinearGradient3Generic<TColor, TValue> {
+    export interface LinearGradient3Generic<TColor, TValue, TStrategy> {
         max: RuleColorStopGeneric<TColor, TValue>;
         mid: RuleColorStopGeneric<TColor, TValue>;
         min: RuleColorStopGeneric<TColor, TValue>;
+        nullColoringStrategy?: NullColoringStrategyGeneric<TStrategy, TColor>;
     }
 
     export interface RuleColorStopGeneric<TColor, TValue> {
         color: TColor;
         value?: TValue;
     }
-}﻿
 
-
+    export interface NullColoringStrategyGeneric<TStrategy, TColor> {
+        strategy: TStrategy;
+        /**
+         * Only used if strategy is specificColor
+         */
+        color?: TColor;
+    }
+}
 
 declare module powerbi {
     export interface FilterTypeDescriptor {
         selfFilter?: boolean;
     }
-}﻿
+}
 
 declare module powerbi {
     export type GeoJson = GeoJsonDefinitionGeneric<string>;
@@ -865,9 +816,7 @@ declare module powerbi {
     }
 
     export interface GeoJsonTypeDescriptor { }
-}﻿
-
-
+}
 
 declare module powerbi {
     export type ImageValue = ImageDefinitionGeneric<string>;
@@ -880,9 +829,7 @@ declare module powerbi {
 
     export interface ImageTypeDescriptor { }
 
-}﻿
-
-
+}
 
 declare module powerbi {
     export type Paragraphs = Paragraph[];
@@ -899,6 +846,7 @@ declare module powerbi {
         fontSize?: string;
         fontStyle?: string;
         fontWeight?: string;
+        color?: string;
         textDecoration?: string;
     }
 
@@ -907,9 +855,7 @@ declare module powerbi {
         url?: string;
         value: string;
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     import SemanticFilter = data.ISemanticFilter;
@@ -938,97 +884,91 @@ declare module powerbi {
         //border?: BorderTypeDescriptor;
         //etc.
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     /** Describes a data value type in the client type system. Can be used to get a concrete ValueType instance. */
     export interface ValueTypeDescriptor {
         // Simplified primitive types
-        text?: boolean;
-        numeric?: boolean;
-        integer?: boolean;
-        bool?: boolean;
-        dateTime?: boolean;
-        duration?: boolean;
-        binary?: boolean;
-        none?: boolean; //TODO: 5005022 remove none type when we introduce property categories.
+        readonly text?: boolean;
+        readonly numeric?: boolean;
+        readonly integer?: boolean;
+        readonly bool?: boolean;
+        readonly dateTime?: boolean;
+        readonly duration?: boolean;
+        readonly binary?: boolean;
+        readonly none?: boolean; //TODO: 5005022 remove none type when we introduce property categories.
 
         // Extended types
-        temporal?: TemporalTypeDescriptor;
-        geography?: GeographyTypeDescriptor;
-        misc?: MiscellaneousTypeDescriptor;
-        formatting?: FormattingTypeDescriptor;
-        enumeration?: IEnumType;
-        scripting?: ScriptTypeDescriptor;
-        operations?: OperationalTypeDescriptor;
+        readonly temporal?: TemporalTypeDescriptor;
+        readonly geography?: GeographyTypeDescriptor;
+        readonly misc?: MiscellaneousTypeDescriptor;
+        readonly formatting?: FormattingTypeDescriptor;
+        /*readonly*/ enumeration?: IEnumType;
+        readonly scripting?: ScriptTypeDescriptor;
+        readonly operations?: OperationalTypeDescriptor;
 
         // variant types
-        variant?: ValueTypeDescriptor[];
+        readonly variant?: ValueTypeDescriptor[];
     }
 
     export interface ScriptTypeDescriptor {
-        source?: boolean;
+        readonly source?: boolean;
     }
 
     export interface TemporalTypeDescriptor {
-        year?: boolean;
-        quarter?: boolean;
-        month?: boolean;
-        day?: boolean;
-        paddedDateTableDate?: boolean;
+        readonly year?: boolean;
+        readonly quarter?: boolean;
+        readonly month?: boolean;
+        readonly day?: boolean;
+        readonly paddedDateTableDate?: boolean;
     }
 
     export interface GeographyTypeDescriptor {
-        address?: boolean;
-        city?: boolean;
-        continent?: boolean;
-        country?: boolean;
-        county?: boolean;
-        region?: boolean;
-        postalCode?: boolean;
-        stateOrProvince?: boolean;
-        place?: boolean;
-        latitude?: boolean;
-        longitude?: boolean;
+        readonly address?: boolean;
+        readonly city?: boolean;
+        readonly continent?: boolean;
+        readonly country?: boolean;
+        readonly county?: boolean;
+        readonly region?: boolean;
+        readonly postalCode?: boolean;
+        readonly stateOrProvince?: boolean;
+        readonly place?: boolean;
+        readonly latitude?: boolean;
+        readonly longitude?: boolean;
     }
 
     export interface MiscellaneousTypeDescriptor {
-        image?: boolean;
-        imageUrl?: boolean;
-        webUrl?: boolean;
-        barcode?: boolean;
+        readonly image?: boolean;
+        readonly imageUrl?: boolean;
+        readonly webUrl?: boolean;
+        readonly barcode?: boolean;
     }
 
     export interface FormattingTypeDescriptor {
-        color?: boolean;
-        formatString?: boolean;
-        alignment?: boolean;
-        labelDisplayUnits?: boolean;
-        fontSize?: boolean;
-        labelDensity?: boolean;
-        bubbleSize?: boolean;
+        readonly color?: boolean;
+        readonly formatString?: boolean;
+        readonly alignment?: boolean;
+        readonly labelDisplayUnits?: boolean;
+        readonly fontSize?: boolean;
+        readonly labelDensity?: boolean;
+        readonly bubbleSize?: boolean;
     }
 
     export interface OperationalTypeDescriptor {
-        searchEnabled?: boolean;
+        readonly searchEnabled?: boolean;
     }
 
     /** Describes instances of value type objects. */
     export type PrimitiveValue = string | number | boolean | Date;
-}﻿
-
-
+}
 
 declare module powerbi {
     export interface IViewport {
         height: number;
         width: number;
     }
-}﻿
-
-
+}
 
 declare module powerbi {
     import Selector = powerbi.data.Selector;
@@ -1100,8 +1040,6 @@ declare module powerbi {
 }
 
 
-
-
 declare module powerbi {
     import Selector = powerbi.data.Selector;
 
@@ -1120,8 +1058,6 @@ declare module powerbi {
         formattingProperties?: string[];
     }
 }
-﻿
-
 
 
 declare module powerbi.extensibility {
@@ -1151,8 +1087,6 @@ declare module powerbi.extensibility {
 }
 
 
-
-
 declare module powerbi {
     export interface IColorInfo extends IStyleInfo {
         value: string;
@@ -1163,18 +1097,15 @@ declare module powerbi {
     }
 }
 
-
-
 declare module powerbi.extensibility {
     interface ISelectionManager {
         select(selectionId: ISelectionId | ISelectionId[], multiSelect?: boolean): IPromise<ISelectionId[]>;
         hasSelection(): boolean;
         clear(): IPromise<{}>;
         getSelectionIds(): ISelectionId[];
+        applySelectionFilter(): void;
     }
 }
-
-
 
 declare module powerbi.extensibility {
     export interface ISelectionId { }
@@ -1187,22 +1118,11 @@ declare module powerbi.extensibility {
     }
 }
 
-
-
-declare module powerbi.extensibility {
-    function VisualPlugin (options: IVisualPluginOptions): ClassDecorator;
-}
-
-
-
 declare module powerbi.extensibility {
     export interface IColorPalette {
         getColor(key: string): IColorInfo;
     }
 }
-
-
-
 
 declare module powerbi.extensibility {
     interface VisualTooltipDataItem {
@@ -1237,11 +1157,13 @@ declare module powerbi.extensibility {
     }
 }
 
+declare module powerbi.extensibility {
+    export function VisualPlugin (options: IVisualPluginOptions): ClassDecorator;
+}
+
 /**
- * Change Log Version 1.4.0
+ * Change Log Version 1.5.0
  */
-
-
 
 declare module powerbi.extensibility.visual {
     /**
@@ -1266,6 +1188,7 @@ declare module powerbi.extensibility.visual {
         persistProperties: (changes: VisualObjectInstancesToPersist) => void;
         tooltipService: ITooltipService;
         locale: string;
+        allowInteractions: boolean;
     }
 
     export interface VisualUpdateOptions extends extensibility.VisualUpdateOptions {
